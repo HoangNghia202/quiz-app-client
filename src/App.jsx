@@ -9,6 +9,7 @@ import LoginPage from "./screens/loginScreen";
 import RedirectPage from "./screens/RedirectPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import QuestionScreen from "./screens/questionScreen";
 function App() {
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.user);
@@ -20,6 +21,7 @@ function App() {
                 <Route path="/" element={<RedirectPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/home" element={<HomePage />} />
+                <Route path="/bank/:id" element={<QuestionScreen />} />
             </Routes>
             <ToastContainer
                 position="top-right"

@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { TextField, Button, Typography } from "@mui/material";
 import React, { useState } from "react";
 import backgroundImage from "../../assets/img/background-login.png";
 import { loginUser } from "../../services/authServices";
@@ -12,9 +12,38 @@ import {
 } from "../../redux/userSlice";
 import { toast } from "react-toastify";
 import { fetchBanksData } from "../../redux/bankSlice";
+import * as Yup from "yup";
+import { Formik, Form, Field } from "formik";
 const API_URL = import.meta.env.VITE_API_URL;
 console.log("API_URL", API_URL);
 
+const registerSchema = Yup.object().shape({
+    firstName: Yup.string().required("First Name is required"),
+    lastName: Yup.string().required("Last Name is required"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    password: Yup.string().required("Password is required"),
+    confirmPassword: Yup.string()
+        .oneOf([Yup.ref("password"), null], "Passwords must match")
+        .required("Confirm Password is required"),
+});
+
+const loginSchema = Yup.object().shape({
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    password: Yup.string().required("Password is required"),
+});
+
+const initialValueRegister = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+};
+
+const initialValueLogin = {
+    email: "",
+    password: "",
+};
 const LoginPage = () => {
     const token = useSelector((state) => state.user.accessToken);
     const dispatch = useDispatch();
@@ -28,11 +57,14 @@ const LoginPage = () => {
     });
     console.log("typeForm", typeForm);
 
-    const handleLogin = async () => {
+    const handleLogin = async (values, { setSubmitting }) => {
+        console.log("values", values);
+        setSubmitting(true);
+
         if (typeForm === "login") {
             const form = {
-                email: formInput.email,
-                password: formInput.password,
+                email: values.email,
+                password: values.password,
             };
             console.log("form", form);
 
@@ -52,12 +84,12 @@ const LoginPage = () => {
         }
     };
 
-    const handleChangeForm = (event) => {
-        setFormInput({
-            ...formInput,
-            [event.target.name]: event.target.value,
-        });
-    };
+    // const handleChangeForm = (event) => {
+    //     setFormInput({
+    //         ...formInput,
+    //         [event.target.name]: event.target.value,
+    //     });
+    // };
 
     console.log("formInput>>>", formInput);
 
@@ -69,100 +101,211 @@ const LoginPage = () => {
                     style={{ height: "500px", width: "800px" }}
                 >
                     <div className="col-span-1 px-2 bg-gray-1-- rounded-md rounded-tr-none rounded-e-none">
-                        <div className="title-form my-4">
-                            <h1 className="text-3xl font-bold text-center text-black">
-                                {typeForm === "login" ? "Login" : "Register"}
-                            </h1>
-                        </div>
-                        <div className="loginForm px-2 flex flex-col justify-center h-50% ">
-                            {typeForm === "register" && (
-                                <TextField
-                                    style={{ marginTop: "20px" }}
-                                    variant="outlined"
-                                    label="First name"
-                                    size="small"
-                                    name="firstName"
-                                    value={formInput.firstName}
-                                    onChange={(event) =>
-                                        handleChangeForm(event)
-                                    }
-                                />
-                            )}
+                        <Formik
+                            initialValues={
+                                typeForm === "login"
+                                    ? initialValueLogin
+                                    : initialValueRegister
+                            }
+                            validationSchema={
+                                typeForm ? loginSchema : registerSchema
+                            }
+                            onSubmit={handleLogin}
+                        >
+                            {({
+                                values,
+                                errors,
+                                touched,
+                                handleChange,
+                                handleBlur,
+                                isSubmitting,
+                                resetForm,
+                                setFieldValue,
+                            }) => (
+                                <Form className="text-center">
+                                    <Typography
+                                        variant="h4"
+                                        style={{
+                                            fontWeight: "bold",
+                                            color: "black",
+                                            marginTop: "20px",
+                                        }}
+                                    >
+                                        {typeForm === "login"
+                                            ? "Login"
+                                            : "Register"}
+                                    </Typography>
+                                    <Field
+                                        as={TextField}
+                                        size="small"
+                                        name="email"
+                                        label="Email"
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                        error={
+                                            touched.email &&
+                                            Boolean(errors.email)
+                                        }
+                                        helperText={
+                                            touched.email && errors.email
+                                        }
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.email}
+                                        className="col-span-2"
+                                    />
 
-                            {typeForm === "register" && (
-                                <TextField
-                                    style={{ marginTop: "20px" }}
-                                    variant="outlined"
-                                    label="Last Name"
-                                    size="small"
-                                    name="lastName"
-                                    value={formInput.lastName}
-                                    onChange={(event) =>
-                                        handleChangeForm(event)
-                                    }
-                                />
-                            )}
+                                    <Field
+                                        as={TextField}
+                                        size="small"
+                                        name="password"
+                                        label="Password"
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                        error={
+                                            touched.password &&
+                                            Boolean(errors.password)
+                                        }
+                                        helperText={
+                                            touched.password && errors.password
+                                        }
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.password}
+                                        className="col-span-2"
+                                        type="password"
+                                    />
 
-                            <TextField
-                                style={{ marginTop: "20px" }}
-                                variant="outlined"
-                                label="Email"
-                                size="small"
-                                name="email"
-                                value={formInput.email}
-                                onChange={(event) => handleChangeForm(event)}
-                            />
-
-                            <TextField
-                                style={{ marginTop: "20px" }}
-                                variant="outlined"
-                                label="Password"
-                                size="small"
-                                type="password"
-                                name="password"
-                                value={formInput.password}
-                                onChange={(event) => handleChangeForm(event)}
-                            />
-                        </div>
-                        <div className="action-btn text-center mt-3">
-                            {typeForm === "login" ? (
-                                <div>
-                                    <button onClick={() => handleLogin()}>
-                                        Login
-                                    </button>
-                                    <div className="mt-2">
-                                        <p className="text-blue-600">
-                                            you don't have account?{" "}
-                                            <p
-                                                className="text underline cursor-pointer"
-                                                onClick={() =>
-                                                    setTypeForm("register")
+                                    {typeForm !== "login" && (
+                                        <>
+                                            <Field
+                                                as={TextField}
+                                                size="small"
+                                                name="confirmPassword"
+                                                label="Confirm Password"
+                                                variant="outlined"
+                                                margin="normal"
+                                                fullWidth
+                                                error={
+                                                    touched.confirmPassword &&
+                                                    Boolean(
+                                                        errors.confirmPassword
+                                                    )
                                                 }
-                                            >
-                                                register
-                                            </p>
-                                        </p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div>
-                                    <button>Register</button>
-                                    <div className="mt-2">
-                                        <p className="text-blue-600">
-                                            you have account?{" "}
-                                            <p
-                                                className="text underline cursor-pointer"
-                                                onClick={() =>
-                                                    setTypeForm("login")
+                                                helperText={
+                                                    touched.confirmPassword &&
+                                                    errors.confirmPassword
                                                 }
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                                value={values.confirmPassword}
+                                                className="col-span-2"
+                                                type="password"
+                                            />
+
+                                            <Field
+                                                as={TextField}
+                                                size="small"
+                                                name="firstName"
+                                                label="First Name"
+                                                variant="outlined"
+                                                margin="normal"
+                                                fullWidth
+                                                error={
+                                                    touched.firstName &&
+                                                    Boolean(errors.firstName)
+                                                }
+                                                helperText={
+                                                    touched.firstName &&
+                                                    errors.firstName
+                                                }
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                                value={values.firstName}
+                                                className="sm:col-span-2 md:col-span-1"
+                                            />
+
+                                            <Field
+                                                as={TextField}
+                                                size="small"
+                                                name="lastName"
+                                                label="Last Name"
+                                                variant="outlined"
+                                                margin="normal"
+                                                fullWidth
+                                                error={
+                                                    touched.lastName &&
+                                                    Boolean(errors.lastName)
+                                                }
+                                                helperText={
+                                                    touched.lastName &&
+                                                    errors.lastName
+                                                }
+                                                onBlur={handleBlur}
+                                                onChange={handleChange}
+                                                value={values.lastName}
+                                                className="sm:col-span-2 md:col-span-1"
+                                            />
+                                        </>
+                                    )}
+                                    <div className="mt-4">
+                                        {typeForm === "login" ? (
+                                            <button
+                                                className="bg-gray-800 up"
+                                                disabled={isSubmitting}
+                                                type="submit"
                                             >
-                                                Login
-                                            </p>
-                                        </p>
+                                                {isSubmitting
+                                                    ? "Loading"
+                                                    : "Login"}
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="bg-gray-800 up"
+                                                disabled={isSubmitting}
+                                                type="submit"
+                                            >
+                                                {isSubmitting
+                                                    ? "Loading"
+                                                    : "register"}
+                                            </button>
+                                        )}
                                     </div>
-                                </div>
+
+                                    <div className="text-clip">
+                                        {typeForm === "login" ? (
+                                            <Typography className="text-black">
+                                                You don't have an account?{" "}
+                                                <span
+                                                    className="text-blue-600 underline decoration-solid cursor-pointer"
+                                                    onClick={() => {
+                                                        setTypeForm("register");
+                                                        resetForm();
+                                                    }}
+                                                >
+                                                    Register
+                                                </span>
+                                            </Typography>
+                                        ) : (
+                                            <Typography className="text-black">
+                                                You have an account?{" "}
+                                                <span
+                                                    className="text-blue-600 underline decoration-solid cursor-pointer"
+                                                    onClick={() => {
+                                                        setTypeForm("login");
+                                                        resetForm();
+                                                    }}
+                                                >
+                                                    Login
+                                                </span>
+                                            </Typography>
+                                        )}
+                                    </div>
+                                </Form>
                             )}
-                        </div>
+                        </Formik>
                     </div>
                     <div
                         className="col-span-2 rounded-md rounded-tl-none rounded-es-none"

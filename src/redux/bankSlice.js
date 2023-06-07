@@ -33,6 +33,14 @@ const bankSlice = createSlice({
         setBankSelected: (state, action) => {
             state.bankSelected = action.payload;
         },
+
+        setNextQuestion: (state, action) => {
+            state.questionNow = state.questionNow + 1;
+        },
+
+        resetQuestionNow: (state, action) => {
+            state.questionNow = 0;
+        },
     },
 });
 
@@ -64,5 +72,7 @@ export const {
     fetchBanksSuccess,
     setBankSelected,
     fetchBanksFail,
+    setNextQuestion,
+    resetQuestionNow,
 } = bankSlice.actions;
 export default bankSlice.reducer;
