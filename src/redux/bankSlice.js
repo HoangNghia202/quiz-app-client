@@ -6,6 +6,7 @@ const initialState = {
     isFetching: false,
     bankSelected: {},
     questionNow: 0,
+    answerOfUser: [],
 };
 
 const bankSlice = createSlice({
@@ -41,6 +42,13 @@ const bankSlice = createSlice({
         resetQuestionNow: (state, action) => {
             state.questionNow = 0;
         },
+        pushAnswerOfUser: (state, action) => {
+            state.answerOfUser.push(action.payload);
+        },
+
+        resetAnswerOfUser: (state, action) => {
+            state.answerOfUser = [];
+        },
     },
 });
 
@@ -74,5 +82,7 @@ export const {
     fetchBanksFail,
     setNextQuestion,
     resetQuestionNow,
+    pushAnswerOfUser,
+    resetAnswerOfUser,
 } = bankSlice.actions;
 export default bankSlice.reducer;

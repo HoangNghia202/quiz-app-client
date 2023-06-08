@@ -1,13 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import Notification from "../components/Notification";
 import {
+    pushAnswerOfUser,
+    resetAnswerOfUser,
     resetQuestionNow,
     setBankSelected,
     setNextQuestion,
 } from "../../redux/bankSlice";
 import { useNavigate } from "react-router-dom";
+import correctImg from "../../assets/img/correct.png";
+import wrongImg from "../../assets/img/wrong.png";
+import congraImg from "../../assets/img/congratulation.png";
+import completeImg from "../../assets/img/complete.png";
+
+const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(seconds).padStart(2, "0");
+
+    return `${formattedMinutes}:${formattedSeconds}`;
+};
+
+const Timer = ({ second }) => {
+    return (
+        <>
+            <h6>Time</h6>
+            <p>{formatTime(second)}</p>
+        </>
+    );
+};
+
 const QuestionScreen = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -20,9 +46,29 @@ const QuestionScreen = () => {
     const [openDialogEnd, setOpenDialogEnd] = useState(false);
     const [propsForDialog, setPropsForDialog] = useState({});
     const [isCorrect, setIsCorrect] = useState(false);
+    const [seconds, setSeconds] = useState(0);
     console.log("answerChoose", answerChoose);
-
     console.log("propsForDialog", propsForDialog);
+
+    const [numCorrectAnswer, setNumCorrectAnswer] = useState(0);
+
+    useEffect(() => {
+        let interval;
+        if (openDialogEnd === false) {
+            interval = setInterval(() => {
+                setSeconds((seconds) => seconds + 1);
+            }, 1000);
+        }
+        return () => {
+            clearInterval(interval);
+        };
+    }, [openDialogEnd]);
+
+    useEffect(() => {
+        if (isCorrect === true) {
+            setNumCorrectAnswer(numCorrectAnswer + 1);
+        }
+    }, [isCorrect]);
 
     const closeDialog = () => {
         setOpenDialog(false);
@@ -36,7 +82,7 @@ const QuestionScreen = () => {
             console.log("wrong answer");
             setIsCorrect(false);
         }
-
+        dispatch(pushAnswerOfUser(answerChoose));
         setOpenDialog(true);
         console.log("openDialog", openDialog);
     };
@@ -49,6 +95,7 @@ const QuestionScreen = () => {
             setQuestion(questions[indexQuestion + 1]);
             setAnswerChoose("");
             setIsCorrect(false);
+            setOpenDialog(false);
             dispatch(setNextQuestion());
         }
     };
@@ -56,7 +103,18 @@ const QuestionScreen = () => {
     const doEndQuestion = () => {
         dispatch(resetQuestionNow());
         dispatch(setBankSelected({}));
+        dispatch(resetAnswerOfUser());
         navigate("/home");
+    };
+
+    const checkIfCorrectThanHaft = () => {
+        if (numCorrectAnswer >= questions.length / 2) {
+            return true;
+        }
+    };
+
+    const reviewAnswer = () => {
+        navigate("review");
     };
     return (
         <>
@@ -67,6 +125,7 @@ const QuestionScreen = () => {
                             <h5 className="mt-6">
                                 Question {indexQuestion + 1}
                             </h5>
+                            <Timer second={seconds} />
                         </div>
                         <div className="text-center">
                             <button onClick={() => validateAnswer()}>
@@ -79,9 +138,7 @@ const QuestionScreen = () => {
                             <div className="question-title">
                                 <p className="text-black">
                                     {" "}
-                                    <stroonSelectng>
-                                        {question.title}{" "}
-                                    </stroonSelectng>{" "}
+                                    <strong>{question.title} </strong>{" "}
                                 </p>
                             </div>
                             <div className="answers">
@@ -95,6 +152,7 @@ const QuestionScreen = () => {
                                         }}
                                         name="answer"
                                         value={"A"}
+                                        checked={answerChoose === "A"}
                                         onClick={(e) => {
                                             setAnswerChoose(e.target.value);
                                         }}
@@ -120,6 +178,7 @@ const QuestionScreen = () => {
                                         onClick={(e) => {
                                             setAnswerChoose(e.target.value);
                                         }}
+                                        checked={answerChoose === "B"}
                                     />
                                     <label
                                         htmlFor=""
@@ -142,6 +201,7 @@ const QuestionScreen = () => {
                                         onClick={(e) => {
                                             setAnswerChoose(e.target.value);
                                         }}
+                                        checked={answerChoose === "C"}
                                     />
                                     <label
                                         htmlFor=""
@@ -164,6 +224,7 @@ const QuestionScreen = () => {
                                         onClick={(e) => {
                                             setAnswerChoose(e.target.value);
                                         }}
+                                        checked={answerChoose === "D"}
                                     />
                                     <label
                                         htmlFor=""
@@ -186,16 +247,25 @@ const QuestionScreen = () => {
                 open={openDialog}
                 handleClose={closeDialog}
                 next={openNextQuestion}
+                imageUrl={isCorrect ? correctImg : wrongImg}
             />
 
             {/* dialog for end of question */}
             <Notification
-                title={"Completed!"}
+                title={
+                    checkIfCorrectThanHaft() ? "Congratulation!" : "Completed!"
+                }
                 type={"end"}
-                content={"You have finished all question"}
+                content={
+                    checkIfCorrectThanHaft()
+                        ? `You amazing! ${numCorrectAnswer}/${questions.length} correct answer in ${seconds} seconds`
+                        : `Better luck next time! ${numCorrectAnswer}/${questions.length} correct answer in ${seconds} seconds`
+                }
                 open={openDialogEnd}
                 handleClose={() => setOpenDialogEnd(false)}
                 next={doEndQuestion}
+                otherAction={reviewAnswer}
+                imageUrl={checkIfCorrectThanHaft() ? congraImg : completeImg}
             />
         </>
     );

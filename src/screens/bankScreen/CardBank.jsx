@@ -3,16 +3,30 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Notification from "../components/Notification";
 import { useDispatch } from "react-redux";
-import { setBankSelected } from "../../redux/bankSlice";
+import {
+    fetchBanksData,
+    setBankSelected,
+    setBanks,
+} from "../../redux/bankSlice";
+import alertImg from "../../assets/img/alert.png";
+import { addAccessedUser } from "../../services/bankServices";
+import { useSelector } from "react-redux";
 function CardBank({ bank }) {
+    const token = useSelector((state) => state.user.accessToken);
+    const currentUserId = useSelector((state) => state.user.userInfo._id);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [openAlert, setOpenAlert] = useState(false);
     const closeAlert = () => {
         setOpenAlert(false);
     };
-    const handleOnclickCard = () => {
+    const handleOnclickCard = async () => {
         console.log("bank Id>>>", bank._id);
+        const res = await addAccessedUser(token, bank._id, currentUserId);
+        if (res.errCode === 0) {
+            dispatch(fetchBanksData(token, dispatch));
+        }
         dispatch(setBankSelected(bank));
         navigate(`/bank/${bank._id}`);
     };
@@ -34,7 +48,7 @@ function CardBank({ bank }) {
                         <p className=""> Questions: {numOfQuestion}</p>
                         <p className="">
                             {" "}
-                            userAccess: {bank.usersAccessed.length}
+                            Accessed: {bank.usersAccessed.length}
                         </p>
                     </div>
                 </div>
@@ -47,6 +61,7 @@ function CardBank({ bank }) {
                 content={`Start quiz bank ${bank.bankName} ?`}
                 handleClose={closeAlert}
                 next={handleOnclickCard}
+                imageUrl={alertImg}
             />
         </>
     );

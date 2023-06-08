@@ -16,6 +16,17 @@ export default {
                 "100%": "100%",
                 "100vh": "100vh",
             },
+            fontWeight: {
+                "extra-light": "100px",
+                light: "300px",
+                normal: "400px",
+                medium: "500px",
+                "semi-bold": "600px",
+                bold: "700px",
+            },
+            borderWidth: {
+                1: "1px",
+            },
         },
     },
     plugins: [],
