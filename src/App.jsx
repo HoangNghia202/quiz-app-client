@@ -14,7 +14,7 @@ import ReviewAnswer from "./screens/questionScreen/ReviewAnswer";
 import NavBar from "./screens/NavBar";
 function App() {
     const dispatch = useDispatch();
-    const currentUser = useSelector((state) => state.user);
+    const currentUser = useSelector((state) => state.user.userReducer);
     console.log("currentUser", currentUser);
 
     return (

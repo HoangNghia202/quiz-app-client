@@ -9,10 +9,10 @@ import NavBar from "./NavBar";
 const Home = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const currentUser = useSelector((state) => state.user);
+    const currentUser = useSelector((state) => state.user.userReducer);
     const banks = useSelector((state) => state.bank.banks);
     console.log("currentUser", currentUser);
-    const token = useSelector((state) => state.user.accessToken);
+    const token = useSelector((state) => state.user.userReducer.accessToken);
     const beginFetchBanksData = async () => {
         await fetchBanksData(token, dispatch);
     };

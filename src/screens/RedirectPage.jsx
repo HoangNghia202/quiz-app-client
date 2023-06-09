@@ -5,9 +5,9 @@ import HomePage from "./homeScreen";
 import LoginPage from "./loginScreen";
 const redirectPage = () => {
     const navigate = useNavigate();
-    const currentUser = useSelector((state) => state.user.userInfo);
+    const isLogin = useSelector((state) => state.user.userReducer.isLogin);
     const checkIfLoggedIn = () => {
-        if (currentUser.id) {
+        if (isLogin) {
             return navigate("/home");
         } else {
             return navigate("/login");
@@ -15,8 +15,8 @@ const redirectPage = () => {
     };
 
     useEffect(() => {
-        checkIfLoggedIn(currentUser);
-    }, [currentUser]);
+        checkIfLoggedIn();
+    }, []);
     return <div></div>;
 };
 export default redirectPage;

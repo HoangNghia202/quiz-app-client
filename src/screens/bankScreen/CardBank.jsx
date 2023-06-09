@@ -12,8 +12,8 @@ import alertImg from "../../assets/img/alert.png";
 import { addAccessedUser } from "../../services/bankServices";
 import { useSelector } from "react-redux";
 function CardBank({ bank }) {
-    const token = useSelector((state) => state.user.accessToken);
-    const currentUser = useSelector((state) => state.user.userInfo);
+    const token = useSelector((state) => state.user.userReducer.accessToken);
+    const currentUser = useSelector((state) => state.user.userReducer.userInfo);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
