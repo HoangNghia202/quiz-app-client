@@ -49,51 +49,28 @@ const QuestionScreen = () => {
     const [propsForDialog, setPropsForDialog] = useState({});
     const [isCorrect, setIsCorrect] = useState(false);
     const [seconds, setSeconds] = useState(0);
-    const [showConfirmation, setShowConfirmation] = useState(false);
     console.log("answerChoose", answerChoose);
     console.log("propsForDialog", propsForDialog);
 
     const [numCorrectAnswer, setNumCorrectAnswer] = useState(0);
 
     useEffect(() => {
-        const handleBackButton = (event) => {
-            event.preventDefault();
-            // Xử lý logic khi người dùng nhấn back
-            console.log("click back");
-        };
-
-        const handleLocationChange = () => {
-            // Kiểm tra thay đổi trong địa chỉ URL để xác định khi nào người dùng nhấn nút back
-            if (location.pathname !== "/") {
-                handleBackButton();
-            }
-        };
-
-        window.addEventListener("popstate", handleLocationChange);
-
+        let interval;
+        if (openDialogEnd === false) {
+            interval = setInterval(() => {
+                setSeconds((seconds) => seconds + 1);
+            }, 1000);
+        }
         return () => {
-            window.removeEventListener("popstate", handleLocationChange);
+            clearInterval(interval);
         };
-    }, [location]);
+    }, [openDialogEnd]);
 
     useEffect(() => {
         if (isCorrect === true) {
             setNumCorrectAnswer(numCorrectAnswer + 1);
         }
     }, [isCorrect]);
-
-    useEffect(() => {
-        const handleBeforeUnload = (event) => {
-            event.preventDefault();
-            event.returnValue = "";
-        };
-
-        window.addEventListener("beforeunload", handleBeforeUnload);
-
-        return () => {
-            window.removeEventListener("beforeunload", handleBeforeUnload);
-        };
-    }, []);
 
     const closeDialog = () => {
         setOpenDialog(false);
@@ -142,19 +119,6 @@ const QuestionScreen = () => {
         navigate("review");
     };
 
-    const handleBackButton = () => {
-        setShowConfirmation(true);
-    };
-
-    const handleConfirmation = (allowNavigation) => {
-        setShowConfirmation(false);
-
-        if (allowNavigation) {
-            // Xử lý logic khi người dùng chấp nhận rời khỏi trang
-        } else {
-            // Xử lý logic khi người dùng không chấp nhận rời khỏi trang
-        }
-    };
     return (
         <>
             <div className="flex h-100vh justify-center items-center">
