@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import Notification from "../components/Notification";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
     pushAnswerOfUser,
     resetAnswerOfUser,
@@ -9,11 +10,12 @@ import {
     setBankSelected,
     setNextQuestion,
 } from "../../redux/bankSlice";
-import { useNavigate } from "react-router-dom";
 import correctImg from "../../assets/img/correct.png";
 import wrongImg from "../../assets/img/wrong.png";
 import congraImg from "../../assets/img/congratulation.png";
 import completeImg from "../../assets/img/complete.png";
+import BackHandler from "./BackHandle";
+import { Button } from "@mui/material";
 
 const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
@@ -37,6 +39,7 @@ const Timer = ({ second }) => {
 const QuestionScreen = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
     const questions = useSelector((state) => state.bank.bankSelected.questions);
     console.log("questions", questions);
     const indexQuestion = useSelector((state) => state.bank.questionNow);
@@ -47,28 +50,51 @@ const QuestionScreen = () => {
     const [propsForDialog, setPropsForDialog] = useState({});
     const [isCorrect, setIsCorrect] = useState(false);
     const [seconds, setSeconds] = useState(0);
+    const [showConfirmation, setShowConfirmation] = useState(false);
     console.log("answerChoose", answerChoose);
     console.log("propsForDialog", propsForDialog);
 
     const [numCorrectAnswer, setNumCorrectAnswer] = useState(0);
 
     useEffect(() => {
-        let interval;
-        if (openDialogEnd === false) {
-            interval = setInterval(() => {
-                setSeconds((seconds) => seconds + 1);
-            }, 1000);
-        }
-        return () => {
-            clearInterval(interval);
+        const handleBackButton = (event) => {
+            event.preventDefault();
+            // Xử lý logic khi người dùng nhấn back
+            console.log("click back");
         };
-    }, [openDialogEnd]);
+
+        const handleLocationChange = () => {
+            // Kiểm tra thay đổi trong địa chỉ URL để xác định khi nào người dùng nhấn nút back
+            if (location.pathname !== "/") {
+                handleBackButton();
+            }
+        };
+
+        window.addEventListener("popstate", handleLocationChange);
+
+        return () => {
+            window.removeEventListener("popstate", handleLocationChange);
+        };
+    }, [location]);
 
     useEffect(() => {
         if (isCorrect === true) {
             setNumCorrectAnswer(numCorrectAnswer + 1);
         }
     }, [isCorrect]);
+
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            event.preventDefault();
+            event.returnValue = "";
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, []);
 
     const closeDialog = () => {
         setOpenDialog(false);
@@ -116,6 +142,20 @@ const QuestionScreen = () => {
     const reviewAnswer = () => {
         navigate("review");
     };
+
+    const handleBackButton = () => {
+        setShowConfirmation(true);
+    };
+
+    const handleConfirmation = (allowNavigation) => {
+        setShowConfirmation(false);
+
+        if (allowNavigation) {
+            // Xử lý logic khi người dùng chấp nhận rời khỏi trang
+        } else {
+            // Xử lý logic khi người dùng không chấp nhận rời khỏi trang
+        }
+    };
     return (
         <>
             <div className="flex h-100vh justify-center items-center">
@@ -128,9 +168,15 @@ const QuestionScreen = () => {
                             <Timer second={seconds} />
                         </div>
                         <div className="text-center">
-                            <button onClick={() => validateAnswer()}>
-                                <h5>Next</h5>
-                            </button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={answerChoose === "" ? true : false}
+                                onClick={() => validateAnswer()}
+                            >
+                                {" "}
+                                Next
+                            </Button>
                         </div>
                     </div>
                     <div className="col-span-3 h-100% bg-slate-300  rounded-xl rounded-tl-none rounded-bl-none p-6">

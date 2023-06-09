@@ -3,12 +3,14 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../redux/userSlice";
 import { Button } from "@mui/material";
+import { toast } from "react-toastify";
 const NavBar = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const handleLogout = () => {
         console.log("logout");
         dispatch(logout());
+        toast.success("Logout successfully");
         navigate("/login");
     };
 
