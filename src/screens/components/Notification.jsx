@@ -25,6 +25,7 @@ const Notification = (props) => {
             // onClose={handleClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+            color="#34495e"
             sx={{ textAlign: "center" }}
         >
             <DialogTitle

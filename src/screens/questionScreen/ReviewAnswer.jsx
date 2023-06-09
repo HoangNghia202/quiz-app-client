@@ -40,63 +40,77 @@ const ReviewAnswer = () => {
 
     return (
         <>
-            <div className="h-100vh flex justify-center">
-                <div className="w-8/12  p-4 relative">
-                    {questions?.map((question, index) => {
-                        return (
-                            <div className="my-8 relative">
-                                <div className="absolute w-12 h-12 right-6 top-4">
-                                    <img
-                                        src={
-                                            checkIsCorrect(
-                                                question.solution,
-                                                userAnswers[index]
-                                            )
-                                                ? correctImg
-                                                : wrongImg
-                                        }
-                                        alt=""
-                                    />
-                                </div>
-                                <div className=" border-2 border-yellow-50 rounded-md p-4">
-                                    <div className="question border-b-1 pb-3 mb-3">
-                                        <h6>
-                                            {" "}
-                                            <strong>
-                                                Question 1: {question.title}
-                                            </strong>{" "}
-                                        </h6>
-                                        <p>{question.ans1}</p>
-                                        <p>{question.ans2}</p>
-                                        <p>{question.ans3}</p>
-                                        <p>{question.ans4}</p>
+            <div className="h-100vh flex flex-col  relative">
+                <div className="grid grid-cols-4 gap-10 px-10">
+                    <div className="col-span-3">
+                        {questions?.map((question, index) => {
+                            return (
+                                <div className="my-8 relative ">
+                                    <div className="absolute w-12 h-12 right-6 top-4">
+                                        <img
+                                            src={
+                                                checkIsCorrect(
+                                                    question.solution,
+                                                    userAnswers[index]
+                                                )
+                                                    ? correctImg
+                                                    : wrongImg
+                                            }
+                                            alt=""
+                                        />
                                     </div>
+                                    <div className=" border-2 border-yellow-50 rounded-md p-4">
+                                        <div className="question border-b-1 pb-3 mb-3">
+                                            <h6>
+                                                {" "}
+                                                <strong>
+                                                    Question 1: {question.title}
+                                                </strong>{" "}
+                                            </h6>
+                                            <p>{question.ans1}</p>
+                                            <p>{question.ans2}</p>
+                                            <p>{question.ans3}</p>
+                                            <p>{question.ans4}</p>
+                                        </div>
 
-                                    <p>Your answer: {userAnswers[index]} </p>
-                                    <p>Correct answer: {question.solution} </p>
+                                        <p>
+                                            Your answer: {userAnswers[index]}{" "}
+                                        </p>
+                                        <p>
+                                            Correct answer: {question.solution}{" "}
+                                        </p>
+                                    </div>
                                 </div>
+                            );
+                        })}
+                    </div>
+                    <div className="col-span-1 relative ">
+                        <div className="  text-center mb-6 sticky top-20 ">
+                            <div className=" my-5">
+                                {" "}
+                                <Button
+                                    variant="outlined"
+                                    color="success"
+                                    sx={{ marginX: "10px" }}
+                                    onClick={() => handelClickDoAgain()}
+                                >
+                                    Do againnn
+                                </Button>
                             </div>
-                        );
-                    })}
+
+                            <div>
+                                <Button
+                                    variant="outlined"
+                                    color="warning"
+                                    sx={{ marginX: "10px" }}
+                                    onClick={() => handleClickOtherBank()}
+                                >
+                                    Other Bank
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div className="action-button text-center mb-6 ">
-                <Button
-                    variant="outlined"
-                    color="success"
-                    sx={{ marginX: "10px" }}
-                    onClick={() => handelClickDoAgain()}
-                >
-                    Do again
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="warning"
-                    sx={{ marginX: "10px" }}
-                    onClick={() => handleClickOtherBank()}
-                >
-                    Other Bank
-                </Button>
             </div>
         </>
     );

@@ -1,10 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../redux/userSlice";
 import { fetchBanksData } from "../redux/bankSlice";
 import CardBank from "./bankScreen/CardBank";
 import NavBar from "./NavBar";
+import { Button } from "@mui/material";
+import { createExcelTemplate, importBank } from "../services/bankServices";
+import { toast } from "react-toastify";
+import GuideDialog from "./components/GuideDialog";
 
 const Home = () => {
     const dispatch = useDispatch();
@@ -16,16 +20,19 @@ const Home = () => {
     const beginFetchBanksData = async () => {
         await fetchBanksData(token, dispatch);
     };
+
+    const [openGuideDialog, setOpenGuideDialog] = useState(false);
+    const [reRender, setReRender] = useState(0);
     useEffect(() => {
         beginFetchBanksData();
-    }, []);
+    }, [reRender]);
 
-    const handleDownloadTemplate = () => {
-        const fileUrl = "/src/assets/template/template.xlsx";
-        const link = document.createElement("a");
-        link.href = fileUrl;
-        link.download = "template.xlsx";
-        link.click();
+    const doReRender = () => {
+        setReRender(reRender + 1);
+    };
+
+    const handleCloseGuideDialog = () => {
+        setOpenGuideDialog(false);
     };
 
     return (
@@ -40,6 +47,14 @@ const Home = () => {
                 />
 
                 <div className=" h-16"></div>
+                <div style={{ paddingLeft: 56, marginTop: 50 }}>
+                    <Button
+                        variant="contained"
+                        onClick={() => setOpenGuideDialog(true)}
+                    >
+                        Create your bank
+                    </Button>
+                </div>
                 <div>
                     <div className="  grid justify-center sm:grid-cols-2  px-14  lg:grid-cols-3 mt-10 ">
                         {banks.map((bank, index) => {
@@ -50,12 +65,24 @@ const Home = () => {
                             );
                         })}
                     </div>
-                    {/* 
-                    <button onClick={() => handleDownloadTemplate()}>
-                        download
-                    </button> */}
                 </div>
+                {/* <button onClick={() => handleDownloadTemplate()}>
+                    Create template file
+                </button>
+                <button>
+                    <input
+                        type="file"
+                        onChange={handleImportBank}
+                        accept=".xlsx"
+                    />
+                </button> */}
             </div>
+
+            <GuideDialog
+                open={openGuideDialog}
+                handleClose={handleCloseGuideDialog}
+                next={doReRender}
+            />
         </>
     );
 };

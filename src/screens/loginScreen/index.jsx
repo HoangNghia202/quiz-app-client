@@ -279,8 +279,8 @@ const LoginPage = () => {
                                                 type="submit"
                                             >
                                                 {isSubmitting
-                                                    ? "Loading"
-                                                    : "Login"}
+                                                    ? "LOADING"
+                                                    : "LOGIN"}
                                             </button>
                                         ) : (
                                             <button
@@ -289,8 +289,8 @@ const LoginPage = () => {
                                                 type="submit"
                                             >
                                                 {isSubmitting
-                                                    ? "Loading"
-                                                    : "register"}
+                                                    ? "LOADING"
+                                                    : "REGISTER"}
                                             </button>
                                         )}
                                     </div>
