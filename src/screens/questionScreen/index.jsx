@@ -14,7 +14,6 @@ import correctImg from "../../assets/img/correct.png";
 import wrongImg from "../../assets/img/wrong.png";
 import congraImg from "../../assets/img/congratulation.png";
 import completeImg from "../../assets/img/complete.png";
-import BackHandler from "./BackHandle";
 import { Button } from "@mui/material";
 
 const formatTime = (time) => {
