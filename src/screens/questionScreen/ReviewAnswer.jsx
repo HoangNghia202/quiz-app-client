@@ -80,7 +80,7 @@ const ReviewAnswer = () => {
                     })}
                 </div>
             </div>
-            <div className="action-button text-center ">
+            <div className="action-button text-center mb-6 ">
                 <Button
                     variant="outlined"
                     color="success"

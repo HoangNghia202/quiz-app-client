@@ -20,3 +20,27 @@ export const loginUser = async (form) => {
         };
     }
 };
+
+export const registerUser = async (form) => {
+    let res;
+    console.log("form in register", form);
+
+    try {
+        res = await axios.post(`${API_URL}/register`, form);
+        if (res.status === 201) {
+            console.log("res from register api", res);
+            return {
+                data: res.data.user,
+                message: "Register successfully",
+                errCode: 0,
+            };
+        }
+    } catch (error) {
+        console.log("error", error);
+        return {
+            data: null,
+            message: error.response.data.message,
+            errCode: 1,
+        };
+    }
+};

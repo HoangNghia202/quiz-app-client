@@ -13,7 +13,7 @@ import { addAccessedUser } from "../../services/bankServices";
 import { useSelector } from "react-redux";
 function CardBank({ bank }) {
     const token = useSelector((state) => state.user.accessToken);
-    const currentUserId = useSelector((state) => state.user.userInfo._id);
+    const currentUser = useSelector((state) => state.user.userInfo);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -21,11 +21,17 @@ function CardBank({ bank }) {
     const closeAlert = () => {
         setOpenAlert(false);
     };
+    const CheckUserJoined = () => {
+        if (bank.usersAccessed.includes(currentUser._id)) {
+            return true;
+        }
+        return false;
+    };
     const handleOnclickCard = async () => {
         console.log("bank Id>>>", bank._id);
-        const res = await addAccessedUser(token, bank._id, currentUserId);
+        const res = await addAccessedUser(token, bank._id, currentUser._id);
         if (res.errCode === 0) {
-            dispatch(fetchBanksData(token, dispatch));
+            await fetchBanksData(token, dispatch);
         }
         dispatch(setBankSelected(bank));
         navigate(`/bank/${bank._id}`);
@@ -45,11 +51,23 @@ function CardBank({ bank }) {
                     </div>
                     <Divider style={{ color: "white" }} />
                     <div className="card-body mt-3">
-                        <p className=""> Questions: {numOfQuestion}</p>
-                        <p className="">
-                            {" "}
-                            Accessed: {bank.usersAccessed.length}
-                        </p>
+                        <div className="flex flex-row">
+                            <div>
+                                {" "}
+                                <p className=""> Questions: {numOfQuestion}</p>
+                                <p className="">
+                                    {" "}
+                                    Accessed: {bank.usersAccessed.length}
+                                </p>
+                            </div>
+
+                            <div className="ml-auto">
+                                <p className="">
+                                    {" "}
+                                    {CheckUserJoined() ? "You joined" : ""}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

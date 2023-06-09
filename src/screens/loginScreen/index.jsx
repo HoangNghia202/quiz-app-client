@@ -1,7 +1,7 @@
 import { TextField, Button, Typography } from "@mui/material";
 import React, { useState } from "react";
 import backgroundImage from "../../assets/img/background-login.png";
-import { loginUser } from "../../services/authServices";
+import { loginUser, registerUser } from "../../services/authServices";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -40,7 +40,7 @@ const initialValueRegister = {
     confirmPassword: "",
 };
 
-const initialValueLogin = {
+let initialValueLogin = {
     email: "",
     password: "",
 };
@@ -81,6 +81,25 @@ const LoginPage = () => {
                 dispatch(loginFail());
                 toast.error(res.message);
             }
+        } else {
+            const form = {
+                firstName: values.firstName,
+                lastName: values.lastName,
+                email: values.email,
+                password: values.password,
+            };
+            console.log("form", form);
+            const res = await registerUser(form);
+            console.log("res from register user", res);
+
+            if (res.errCode === 0) {
+                toast.success(res.message);
+                setTypeForm("login");
+                initialValueLogin = {
+                    email: res.data.email,
+                    password: "",
+                };
+            }
         }
     };
 
@@ -98,7 +117,7 @@ const LoginPage = () => {
             <div className="h-100vh flex justify-center items-center">
                 <div
                     className="grid md:grid-cols-3 bg-white rounded-md"
-                    style={{ height: "500px", width: "800px" }}
+                    style={{ minHeight: "500px", width: "800px" }}
                 >
                     <div className="col-span-1 px-2 bg-gray-1-- rounded-md rounded-tr-none rounded-e-none">
                         <Formik
@@ -108,7 +127,9 @@ const LoginPage = () => {
                                     : initialValueRegister
                             }
                             validationSchema={
-                                typeForm ? loginSchema : registerSchema
+                                typeForm === "login"
+                                    ? loginSchema
+                                    : registerSchema
                             }
                             onSubmit={handleLogin}
                         >
@@ -135,76 +156,8 @@ const LoginPage = () => {
                                             ? "Login"
                                             : "Register"}
                                     </Typography>
-                                    <Field
-                                        as={TextField}
-                                        size="small"
-                                        name="email"
-                                        label="Email"
-                                        variant="outlined"
-                                        margin="normal"
-                                        fullWidth
-                                        error={
-                                            touched.email &&
-                                            Boolean(errors.email)
-                                        }
-                                        helperText={
-                                            touched.email && errors.email
-                                        }
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.email}
-                                        className="col-span-2"
-                                    />
-
-                                    <Field
-                                        as={TextField}
-                                        size="small"
-                                        name="password"
-                                        label="Password"
-                                        variant="outlined"
-                                        margin="normal"
-                                        fullWidth
-                                        error={
-                                            touched.password &&
-                                            Boolean(errors.password)
-                                        }
-                                        helperText={
-                                            touched.password && errors.password
-                                        }
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        value={values.password}
-                                        className="col-span-2"
-                                        type="password"
-                                    />
-
                                     {typeForm !== "login" && (
                                         <>
-                                            <Field
-                                                as={TextField}
-                                                size="small"
-                                                name="confirmPassword"
-                                                label="Confirm Password"
-                                                variant="outlined"
-                                                margin="normal"
-                                                fullWidth
-                                                error={
-                                                    touched.confirmPassword &&
-                                                    Boolean(
-                                                        errors.confirmPassword
-                                                    )
-                                                }
-                                                helperText={
-                                                    touched.confirmPassword &&
-                                                    errors.confirmPassword
-                                                }
-                                                onBlur={handleBlur}
-                                                onChange={handleChange}
-                                                value={values.confirmPassword}
-                                                className="col-span-2"
-                                                type="password"
-                                            />
-
                                             <Field
                                                 as={TextField}
                                                 size="small"
@@ -250,6 +203,74 @@ const LoginPage = () => {
                                             />
                                         </>
                                     )}
+                                    <Field
+                                        as={TextField}
+                                        size="small"
+                                        name="email"
+                                        label="Email"
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                        error={
+                                            touched.email &&
+                                            Boolean(errors.email)
+                                        }
+                                        helperText={
+                                            touched.email && errors.email
+                                        }
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.email}
+                                        className="col-span-2"
+                                    />
+
+                                    <Field
+                                        as={TextField}
+                                        size="small"
+                                        name="password"
+                                        label="Password"
+                                        variant="outlined"
+                                        margin="normal"
+                                        fullWidth
+                                        error={
+                                            touched.password &&
+                                            Boolean(errors.password)
+                                        }
+                                        helperText={
+                                            touched.password && errors.password
+                                        }
+                                        onBlur={handleBlur}
+                                        onChange={handleChange}
+                                        value={values.password}
+                                        className="col-span-2"
+                                        type="password"
+                                    />
+
+                                    {typeForm !== "login" && (
+                                        <Field
+                                            as={TextField}
+                                            size="small"
+                                            name="confirmPassword"
+                                            label="Confirm Password"
+                                            variant="outlined"
+                                            margin="normal"
+                                            fullWidth
+                                            error={
+                                                touched.confirmPassword &&
+                                                Boolean(errors.confirmPassword)
+                                            }
+                                            helperText={
+                                                touched.confirmPassword &&
+                                                errors.confirmPassword
+                                            }
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            value={values.confirmPassword}
+                                            className="col-span-2"
+                                            type="password"
+                                        />
+                                    )}
+
                                     <div className="mt-4">
                                         {typeForm === "login" ? (
                                             <button

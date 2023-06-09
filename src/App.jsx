@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import QuestionScreen from "./screens/questionScreen";
 import ReviewAnswer from "./screens/questionScreen/ReviewAnswer";
+import NavBar from "./screens/NavBar";
 function App() {
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.user);

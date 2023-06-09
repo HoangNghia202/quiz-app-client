@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { logout } from "../redux/userSlice";
 import { fetchBanksData } from "../redux/bankSlice";
 import CardBank from "./bankScreen/CardBank";
+import NavBar from "./NavBar";
 
 const Home = () => {
     const dispatch = useDispatch();
@@ -18,25 +19,41 @@ const Home = () => {
     useEffect(() => {
         beginFetchBanksData();
     }, []);
-    const handleLogout = () => {
-        console.log("logout");
-        dispatch(logout());
-        navigate("/login");
+
+    const handleDownloadTemplate = () => {
+        const fileUrl = "/src/assets/template/template.xlsx";
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        link.download = "template.xlsx";
+        link.click();
     };
 
     return (
         <>
-            <div className="h-100vh">
-                <button onClick={() => handleLogout()}>Logout</button>
+            <div className="h-100vh relative">
+                <NavBar
+                    userName={
+                        currentUser.userInfo.firstName +
+                        " " +
+                        currentUser.userInfo.lastName
+                    }
+                />
 
-                <div className="  grid justify-center sm:grid-cols-2   lg:grid-cols-3 ">
-                    {banks.map((bank, index) => {
-                        return (
-                            <div key={index} className="col-span-1">
-                                <CardBank bank={bank} />
-                            </div>
-                        );
-                    })}
+                <div className=" h-16"></div>
+                <div>
+                    <div className="  grid justify-center sm:grid-cols-2  px-14  lg:grid-cols-3 mt-10 ">
+                        {banks.map((bank, index) => {
+                            return (
+                                <div key={index} className="col-span-1">
+                                    <CardBank bank={bank} />
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {/* 
+                    <button onClick={() => handleDownloadTemplate()}>
+                        download
+                    </button> */}
                 </div>
             </div>
         </>
